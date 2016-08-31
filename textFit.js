@@ -40,7 +40,8 @@
     maxFontSize: 80,
     reProcess: true, // if true, textFit will re-process already-fit nodes. Set to 'false' for better performance
     widthOnly: false, // if true, textFit will fit text to element width, regardless of text height
-    alignVertWithFlexbox: false, // if true, textFit will use flexbox for vertical alignment
+    alignVertWithFlexbox: false, // if true, textFit will use flexbox for vertical alignment,
+    shrinkOnly: false // if true, textFit will only shrink the text if needed and will not make it bigger
   };
 
   return function textFit(els, options) {
@@ -91,7 +92,7 @@
     }
 
     var innerSpan, originalHeight, originalHTML, originalWidth;
-    var low, mid, high;
+    var low, mid, high, computedFont;
 
     // Get element data.
     originalHTML = el.innerHTML;
@@ -147,9 +148,10 @@
     if (!multiLine) {
       el.style['white-space'] = 'nowrap';
     }
-
+    
+    computedFont = parseInt(window.getComputedStyle(el, null).getPropertyValue('font-size'));
     low = settings.minFontSize + 1;
-    high = settings.maxFontSize + 1;
+    high = settings.shrinkOnly ? computedFont : settings.maxFontSize + 1;
 
     // Binary search for best fit
     while (low <= high) {
